@@ -16,8 +16,6 @@ namespace Bottles.LibraryWine
                 winePath = Path.Combine(winePath, "files");
             else
                 throw new Exception("Proton Path is not valid");
-                
-            Console.WriteLine("Proton construct == " + winePath);
 
             if (!WineHelpers.ValidateWinePath(winePath))
                 throw new Exception("Proton Path is not valid");
