@@ -22,5 +22,30 @@ namespace Bottles.LibraryWine
         {
             wine.ExecCommand("winedbg", useTerminal: true);
         }
+
+        public static void WineCmd(ref Wine wine)
+        {
+            wine.ExecCommand("cmd", useTerminal: true);
+        }
+
+        public static void WineTaskmgr(ref Wine wine)
+        {
+            wine.ExecCommand("taskmgr");
+        }
+
+        public static void WineControl(ref Wine wine)
+        {
+            wine.ExecCommand("control");
+        }
+
+        public static void WineUninstaller(ref Wine wine)
+        {
+            wine.ExecCommand("uninstaller");
+        }
+
+        public static void WineRegedit(ref Wine wine)
+        {
+            wine.ExecCommand("regedit");
+        }
     }
 }
