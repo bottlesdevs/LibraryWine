@@ -10,7 +10,7 @@ namespace Bottles.LibraryWine
         public string WinePath { get; }
         public string WinePrefixPath { get; }
         public VerboseLevels VerboseLevel { get; }
-
+        public SupportedTerminals Terminal { get; set; }
         private List<string> VerboseLevelsString = new List<string>()
         {
             "-all", "-warn+all", "fixme-all", "+all"
@@ -34,6 +34,23 @@ namespace Bottles.LibraryWine
             BUILTIN_NATIVE = 2,
             NATIVE_BUILTIN = 3
         }
+        private Dictionary<string, string[]> SupportedTerminalsStrings = new Dictionary<string, string[]>()
+        {
+            {"XTERM", new string[] {"xterm", "-e"}},
+            {"KONSOLE", new string[] {"konsole", "-e"}},
+            {"GNOME_TERMINAL", new string[] {"gnome-terminal", "--"}},
+            {"XFCE4_TERMINAL", new string[] {"xfce4-terminal", "--command"}},
+            {"MATE_TERMINAL", new string[] {"mate-terminal", "--command"}}
+        };
+
+        public enum SupportedTerminals
+        {
+            XTERM = 0,
+            KONSOLE = 1,
+            GNOME_TERMINAL = 2,
+            XFCE4_TERMINAL = 3,
+            MATE_TERMINAL = 4
+        }
 
         public Wine(
             string winePath,
@@ -48,8 +65,6 @@ namespace Bottles.LibraryWine
             this.WinePath = winePath;
             this.WinePrefixPath = winePrefixPath;
             this.VerboseLevel = verboseLevel;
-
-            Console.WriteLine("Wine construct == " + winePath);
         }
 
 
@@ -57,14 +72,32 @@ namespace Bottles.LibraryWine
             string command,
             string arguments = "",
             Dictionary<string, string> envVars = null,
-            bool getOutput = false)
+            bool getOutput = false,
+            bool useTerminal = false,
+            string workingDirectory = "")
         {
+            if (workingDirectory == "")
+                workingDirectory = this.WinePrefixPath;
+
+            string fileName = $"{this.WinePath}/bin/wine64";
+            string fileArguments = $"{command} {arguments}";
+
+# if !FLATPAK
+            if (useTerminal)
+            {
+                fileArguments = $"{SupportedTerminalsStrings[Terminal.ToString()][1]} {fileName} {fileArguments}";
+                fileName = SupportedTerminalsStrings[Terminal.ToString()][0];
+                Console.WriteLine($"Executing: {fileName} {fileArguments}");
+            }
+# endif
+
             var startInfo = new ProcessStartInfo() 
             { 
-                FileName = $"{this.WinePath}/bin/wine64", 
-                Arguments = $"{command} {arguments}",
+                FileName = fileName, 
+                Arguments = fileArguments,
                 UseShellExecute = false,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                WorkingDirectory = workingDirectory
             };
 
             startInfo.EnvironmentVariables["WINEPREFIX"] = WinePrefixPath;
