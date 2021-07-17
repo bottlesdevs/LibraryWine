@@ -2,7 +2,7 @@ using System;
 
 namespace Bottles.LibraryWine
 {
-    public static class WineHelper
+    public static class WineHelpers
     {
     }
 }
