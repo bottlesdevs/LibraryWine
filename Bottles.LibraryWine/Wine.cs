@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
+using Bottles.LibraryWine.Models;
 
 namespace Bottles.LibraryWine
 {
@@ -8,17 +11,25 @@ namespace Bottles.LibraryWine
     {
         private string WinePath { get; set; }
         private string WinePrefixPath { get; set; }
-        private int VerboseLevel { get; set; }
+        private VerboseLevels VerboseLevel { get; set; }
 
-        private enum VerboseLevels
+        private List<string> VerboseLevelsString = new List<string>()
         {
-            N_All = 0,
+            "-all", "-warn+all", "fixme-all", "+all"
+        };
+        public enum VerboseLevels
+        {
+            N_ALL = 0,
             N_WARN_Y_ALL = 1,
             FIXME_N_ALL = 2,
             Y_ALL = 3
         }
 
-        private enum DllOverrideTypes
+        private List<string> DllOverrideTypesString = new List<string>()
+        {
+            "builtin", "native", "builtin,native", "native,builtin"
+        };
+        public enum DllOverrideTypes
         {
             BUILTIN = 0,
             NATIVE = 1,
@@ -26,96 +37,63 @@ namespace Bottles.LibraryWine
             NATIVE_BUILTIN = 3
         }
 
-        private enum RegeditKTypes
+        public Wine(string winePath, string winePrefixPath, VerboseLevels verboseLevel = VerboseLevels.N_ALL)
         {
-            REG_SZ = 0,
-            REG_DWORD = 1,
-            REG_MULTI_SZ = 2,
-            REG_BINARY = 3,
-            REG_EXPAND_SZ = 4,
-            REG_NONE = 5
-        }
+            if (!WineHelpers.ValidateWinePath(winePath))
+                throw new Exception("Wine Path is not valid");
 
-        public Dictionary<string, WindowsVersion> WindowsVersions = new Dictionary<string, WindowsVersion>
-        {
-            { "win10", new WindowsVersion(
-                productName: "Microsoft Windows 10",
-                csdVersion: "",
-                currentBuild: "17763",
-                currentBuildNumber: "17763",
-                currentVersion: "10.0"
-            ) },
-            { "win81", new WindowsVersion(
-                productName: "Microsoft Windows 8.1",
-                csdVersion: "",
-                currentBuild: "9600",
-                currentBuildNumber: "9600",
-                currentVersion: "6.3"
-            ) },
-            { "win8", new WindowsVersion(
-                productName: "Microsoft Windows 8",
-                csdVersion: "",
-                currentBuild: "9200",
-                currentBuildNumber: "9200",
-                currentVersion: "6.2"
-            ) },
-            { "win7", new WindowsVersion(
-                productName: "Microsoft Windows 7",
-                csdVersion: "Service Pack 1",
-                currentBuild: "7601",
-                currentBuildNumber: "7601",
-                currentVersion: "6.1"
-            ) },
-            { "win2008r2", new WindowsVersion(
-                productName: "Microsoft Windows 2008 R2",
-                csdVersion: "Service Pack 1",
-                currentBuild: "7601",
-                currentBuildNumber: "7601",
-                currentVersion: "6.1"
-            ) },
-            { "win2008", new WindowsVersion(
-                productName: "Microsoft Windows 2008",
-                csdVersion: "Service Pack 2",
-                currentBuild: "6002",
-                currentBuildNumber: "6002",
-                currentVersion: "6.0"
-            ) },
-            { "winxp", new WindowsVersion(
-                productName: "Microsoft Windows XP",
-                csdVersion: "Service Pack 2",
-                currentBuild: "3790",
-                currentBuildNumber: "3790",
-                currentVersion: "5.2"
-            ) },
-        };
-
-
-        public Wine(string winePath, string winePrefixPath, int verboseLevel = 0)
-        {
             this.WinePath = winePath;
             this.WinePrefixPath = winePrefixPath;
-            this.VerboseLevel = 3;
-
-            if (Enum.IsDefined(typeof(VerboseLevels), verboseLevel))
-                this.VerboseLevel = verboseLevel;
-
-            if (!ValidateWinePath())
-                throw new Exception("Wine Path is not valid");
+            this.VerboseLevel = verboseLevel;
         }
 
-        private bool ValidateWinePath()
-        {
-            if (string.IsNullOrEmpty(this.WinePath))
-                return false;
-            if (!Directory.Exists(this.WinePath))
-                return false;
 
-            foreach (string dir in new string[] { "share", "bin", "lib" })
+        public object ExecCommand(
+            string command,
+            string arguments = "",
+            Dictionary<string, string> envVars = null,
+            bool getOutput = false)
+        {
+            var startInfo = new ProcessStartInfo() 
+            { 
+                FileName = $"{this.WinePath}/bin/wine64", 
+                Arguments = $"{command} {arguments}",
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+
+            startInfo.EnvironmentVariables["WINEPREFIX"] = WinePrefixPath;
+            startInfo.EnvironmentVariables["WINEDEBUG"] = VerboseLevelsString[(int)VerboseLevel];
+
+            if(envVars != null)
+                foreach (var envVar in envVars
+                    .Where(envVar => !(envVar.Key.ToLower() == "wineprefix" || 
+                                       envVar.Key.ToLower() == "winedebug")))
+                    {
+                        startInfo.EnvironmentVariables[envVar.Key] = envVar.Value;
+                    }
+            
+            var proc = new Process() { StartInfo = startInfo };
+            
+            try
             {
-                if (!Directory.Exists(Path.Combine(this.WinePath, dir)))
-                    return false;
+                proc.Start();
+
+                var output = proc.StandardOutput.ReadToEnd();
+                proc.WaitForExit();
+
+                Console.WriteLine(output);
+
+                if(getOutput)
+                    return output;
+
+                return true;
             }
-            return true;
+            catch(Exception ex)
+            {
+                Console.WriteLine("ERR: " + ex.Message);
+                return false;
+            }
         }
     }
 }
