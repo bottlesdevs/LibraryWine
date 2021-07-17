@@ -36,6 +36,7 @@ namespace Bottles.LibraryWine
         }
         private Dictionary<string, string[]> SupportedTerminalsStrings = new Dictionary<string, string[]>()
         {
+            {"NONE", new string[] {}},
             {"XTERM", new string[] {"xterm", "-e"}},
             {"KONSOLE", new string[] {"konsole", "-e"}},
             {"GNOME_TERMINAL", new string[] {"gnome-terminal", "--"}},
@@ -45,11 +46,12 @@ namespace Bottles.LibraryWine
 
         public enum SupportedTerminals
         {
-            XTERM = 0,
-            KONSOLE = 1,
-            GNOME_TERMINAL = 2,
-            XFCE4_TERMINAL = 3,
-            MATE_TERMINAL = 4
+            NONE = 0,
+            XTERM = 1,
+            KONSOLE = 2,
+            GNOME_TERMINAL = 3,
+            XFCE4_TERMINAL = 4,
+            MATE_TERMINAL = 5
         }
 
         public Wine(
@@ -83,7 +85,7 @@ namespace Bottles.LibraryWine
             string fileArguments = $"{command} {arguments}";
 
 # if !FLATPAK
-            if (useTerminal)
+            if (useTerminal && Terminal != SupportedTerminals.NONE)
             {
                 fileArguments = $"{SupportedTerminalsStrings[Terminal.ToString()][1]} {fileName} {fileArguments}";
                 fileName = SupportedTerminalsStrings[Terminal.ToString()][0];
