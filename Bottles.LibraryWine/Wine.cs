@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using Bottles.LibraryWine.Models;
 
 namespace Bottles.LibraryWine
 {
     public class Wine
     {
-        private string WinePath { get; set; }
-        private string WinePrefixPath { get; set; }
-        private VerboseLevels VerboseLevel { get; set; }
+        public string WinePath { get; }
+        public string WinePrefixPath { get; }
+        public VerboseLevels VerboseLevel { get; }
 
         private List<string> VerboseLevelsString = new List<string>()
         {
@@ -37,14 +35,21 @@ namespace Bottles.LibraryWine
             NATIVE_BUILTIN = 3
         }
 
-        public Wine(string winePath, string winePrefixPath, VerboseLevels verboseLevel = VerboseLevels.N_ALL)
+        public Wine(
+            string winePath,
+            string winePrefixPath,
+            VerboseLevels verboseLevel = VerboseLevels.N_ALL,
+            bool skipPathCheck = false)
         {
-            if (!WineHelpers.ValidateWinePath(winePath))
-                throw new Exception("Wine Path is not valid");
+            if(!skipPathCheck)
+                if (!WineHelpers.ValidateWinePath(winePath))
+                    throw new Exception("Wine Path is not valid");
 
             this.WinePath = winePath;
             this.WinePrefixPath = winePrefixPath;
             this.VerboseLevel = verboseLevel;
+
+            Console.WriteLine("Wine construct == " + winePath);
         }
 
 
@@ -81,9 +86,9 @@ namespace Bottles.LibraryWine
 
                 var output = proc.StandardOutput.ReadToEnd();
                 proc.WaitForExit();
-
+#if DEBUG
                 Console.WriteLine(output);
-
+#endif
                 if(getOutput)
                     return output;
 
