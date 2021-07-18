@@ -88,6 +88,26 @@ namespace Bottles.LibraryWine
             return true;
         }
 
+        public static bool ValidateWinePrefixPath(string winePrefixPath)
+        {
+            if (string.IsNullOrEmpty(winePrefixPath))
+                return false;
+            if (!Directory.Exists(winePrefixPath))
+            {
+                try
+                {
+                    Directory.CreateDirectory(winePrefixPath);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
         public static bool CheckArchCompatibility()
         {
             return false;

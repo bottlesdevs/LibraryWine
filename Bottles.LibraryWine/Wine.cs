@@ -91,6 +91,9 @@ namespace Bottles.LibraryWine
                     throw new Exception("Proton Path is not valid");
                 else
                     throw new Exception("Wine Path is not valid");
+            
+            if (!WineHelpers.ValidateWinePrefixPath(winePrefixPath))
+                throw new Exception("Wine Prefix Path is invalid and creation failed");
 
             this.WinePath = winePath;
             this.WinePrefixPath = winePrefixPath;
