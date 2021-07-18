@@ -97,14 +97,14 @@ namespace Bottles.LibraryWine
             string fileName = $"{this.WinePath}/bin/wine64";
             string fileArguments = $"{command} {arguments}";
 
-# if !FLATPAK
+#if !FLATPAK
             if (useTerminal && Terminal != SupportedTerminals.NONE)
             {
                 fileArguments = $"{SupportedTerminalsStrings[Terminal.ToString()][1]} {fileName} {fileArguments}";
                 fileName = SupportedTerminalsStrings[Terminal.ToString()][0];
                 Console.WriteLine($"Executing: {fileName} {fileArguments}");
             }
-# endif
+#endif
 
             var startInfo = new ProcessStartInfo() 
             { 
