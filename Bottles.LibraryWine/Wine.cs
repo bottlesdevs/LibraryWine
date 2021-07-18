@@ -96,13 +96,18 @@ namespace Bottles.LibraryWine
 
             string fileName = $"{this.WinePath}/bin/wine64";
             string fileArguments = $"{command} {arguments}";
+            bool useShellExecute = false;
+            bool redirectStandardOutput = true;
 
 #if !FLATPAK
-            if (useTerminal && Terminal != SupportedTerminals.NONE)
+            if (useTerminal && Terminal != SupportedTerminals.NONE && !getOutput)
             {
                 fileArguments = $"{SupportedTerminalsStrings[Terminal.ToString()][1]} {fileName} {fileArguments}";
                 fileName = SupportedTerminalsStrings[Terminal.ToString()][0];
-                Console.WriteLine($"Executing: {fileName} {fileArguments}");
+            }
+            else {
+                useShellExecute = true;
+                redirectStandardOutput = false;
             }
 #endif
 
@@ -110,8 +115,8 @@ namespace Bottles.LibraryWine
             { 
                 FileName = fileName, 
                 Arguments = fileArguments,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
+                UseShellExecute = useShellExecute,
+                RedirectStandardOutput = redirectStandardOutput,
                 WorkingDirectory = workingDirectory
             };
 
@@ -132,14 +137,16 @@ namespace Bottles.LibraryWine
             {
                 proc.Start();
 
-                var output = proc.StandardOutput.ReadToEnd();
-                proc.WaitForExit();
-#if DEBUG
-                Console.WriteLine(output);
-#endif
-                if(getOutput)
-                    return output;
+                if (redirectStandardOutput)
+                {
+                    var output = proc.StandardOutput.ReadToEnd();
+                    proc.WaitForExit();
 
+                    if(getOutput)
+                        return output;
+                }
+
+                proc.WaitForExit();
                 return true;
             }
             catch(Exception ex)
