@@ -35,6 +35,21 @@ namespace Bottles.LibraryWine
             BUILTIN_NATIVE = 2,
             NATIVE_BUILTIN = 3
         }
+
+        public List<string> BootStatesStrings = new List<string>()
+        {
+            "--end-session", "--force", "--init", "--kill", "--restart", "--shutdown", "--update"
+        };
+        public enum BootStates
+        {
+            END_SESSION = 0,
+            FORCE = 1,
+            INIT = 2,
+            KILL = 3,
+            RESTART = 4,
+            SHUTDOWN = 5,
+            UPDATE = 6
+        }
         private Dictionary<string, string[]> SupportedTerminalsStrings = new Dictionary<string, string[]>()
         {
             {"NONE", new string[] {}},
@@ -109,6 +124,10 @@ namespace Bottles.LibraryWine
                 useShellExecute = true;
                 redirectStandardOutput = false;
             }
+#endif
+
+#if DEBUG
+            Console.WriteLine($"Executing: {fileName} {fileArguments}");
 #endif
 
             var startInfo = new ProcessStartInfo() 

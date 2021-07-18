@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 
 namespace Bottles.LibraryWine
 {
-    public static class WineTools
+    public class WineTools
     {
 
 #region Informations
@@ -13,6 +14,54 @@ namespace Bottles.LibraryWine
                 return result.ToString();
 
             return (string)result;
+        }
+#endregion
+
+#region Boot
+        private static void WineBoot(ref Wine wine, Wine.BootStates state, bool silent = true)
+        {
+            string stateFlag = wine.BootStatesStrings[(int)state];
+            Dictionary<string, string> envVars = new Dictionary<string, string>();
+
+            if (silent)
+                envVars.Add("DISPLAY", ":3.0");
+
+            wine.ExecCommand($"wineboot {stateFlag}", envVars: envVars);
+        }
+
+        public static void WineBootEndSession(ref Wine wine, bool silent = true)
+        {
+            WineBoot(ref wine, Wine.BootStates.END_SESSION, silent);
+        }
+        
+        public static void WineBootForce(ref Wine wine, bool silent = true)
+        {
+            WineBoot(ref wine, Wine.BootStates.FORCE, silent);
+        }
+
+        public static void WineBootInit(ref Wine wine, bool silent = true)
+        {
+            WineBoot(ref wine, Wine.BootStates.INIT, silent);
+        }
+
+        public static void WineBootKill(ref Wine wine, bool silent = true)
+        {
+            WineBoot(ref wine, Wine.BootStates.KILL, silent);
+        }
+
+        public static void WineBootRestart(ref Wine wine, bool silent = true)
+        {
+            WineBoot(ref wine, Wine.BootStates.RESTART, silent);
+        }
+
+        public static void WineBootShutdown(ref Wine wine, bool silent = true)
+        {
+            WineBoot(ref wine, Wine.BootStates.SHUTDOWN, silent);
+        }
+
+        public static void WineBootUpdate(ref Wine wine, bool silent = true)
+        {
+            WineBoot(ref wine, Wine.BootStates.UPDATE, silent);
         }
 #endregion
 
