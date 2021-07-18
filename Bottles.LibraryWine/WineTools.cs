@@ -27,9 +27,18 @@ namespace Bottles.LibraryWine
             wine.ExecCommand("winedbg", useTerminal: true);
         }
 
-        public static void WineCmd(ref Wine wine)
+        public static object WineCmd(ref Wine wine, string command = "", bool getOutput = false)
         {
-            wine.ExecCommand("cmd", useTerminal: true);
+            if (command == "")
+                command = "cmd";
+            else
+                command = $"cmd /c {command}";
+#if FLATPAK
+            if (!getOutput)
+                command = $"wineconsole {command}";
+#endif
+            var result = wine.ExecCommand(command, useTerminal: true, getOutput: getOutput);
+            return result;
         }
 
         public static void WineTaskmgr(ref Wine wine)
