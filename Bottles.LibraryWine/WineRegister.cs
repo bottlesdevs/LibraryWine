@@ -14,14 +14,17 @@ namespace Bottles.LibraryWine
             REG_EXPAND_SZ,
             REG_NONE
         }
-        
-        public static bool GetKeyValues(ref Wine wine, string key)
+
+        public static object GetKeyValues(ref Wine wine, string key)
         {
-            var result = wine.ExecCommand($"reg query '{key}' /f");
+            var result = wine.ExecCommand(
+                $"reg query '{key}' /f",
+                getOutput: true
+            );
 
             if (result is bool)
                 return (bool)result;
-            return false;
+            return (string)result;
         }
         
         public static bool AddKey(ref Wine wine, string key, string value, string data, KTypes kType)
