@@ -5,7 +5,6 @@ namespace Bottles.LibraryWine
 {
     public class WineTools
     {
-
 #region Informations
         public static string GetVersion(ref Wine wine)
         {

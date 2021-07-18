@@ -14,7 +14,7 @@ namespace Bottles.LibraryWine
             REG_EXPAND_SZ,
             REG_NONE
         }
-
+        
         public static bool GetKeyValues(ref Wine wine, string key)
         {
             var result = wine.ExecCommand($"reg query '{key}' /f");
