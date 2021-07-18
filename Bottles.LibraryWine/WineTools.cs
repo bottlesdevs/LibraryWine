@@ -17,6 +17,22 @@ namespace Bottles.LibraryWine
 #endregion
 
 #region Tools
+        public static void RunExe(ref Wine wine, string executable, string arguments = "")
+        {
+            wine.ExecCommand(executable, arguments);
+        }
+
+        public static void RunMsi(ref Wine wine, string executable, string arguments = "")
+        {
+            string command = $"msiexec /i {executable}";
+            wine.ExecCommand(command, arguments);
+        }
+
+        public static void RunBat(ref Wine wine, string executable, string arguments = "")
+        {
+            WineCmd(ref wine, executable, arguments);
+        }
+
         public static void WineCfg(ref Wine wine)
         {
             wine.ExecCommand("winecfg");
@@ -27,7 +43,7 @@ namespace Bottles.LibraryWine
             wine.ExecCommand("winedbg", useTerminal: true);
         }
 
-        public static object WineCmd(ref Wine wine, string command = "", bool getOutput = false)
+        public static object WineCmd(ref Wine wine, string command = "", string arguments = "", bool getOutput = false)
         {
             if (command == "")
                 command = "cmd";
@@ -37,7 +53,12 @@ namespace Bottles.LibraryWine
             if (!getOutput)
                 command = $"wineconsole {command}";
 #endif
-            var result = wine.ExecCommand(command, useTerminal: true, getOutput: getOutput);
+            var result = wine.ExecCommand(
+                command, 
+                useTerminal: true, 
+                arguments: arguments, 
+                getOutput: getOutput
+            );
             return result;
         }
 
