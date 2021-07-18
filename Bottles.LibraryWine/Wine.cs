@@ -1,7 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Bottles.LibraryWine
 {
@@ -58,10 +59,22 @@ namespace Bottles.LibraryWine
             string winePath,
             string winePrefixPath,
             VerboseLevels verboseLevel = VerboseLevels.N_ALL,
-            bool skipPathCheck = false)
+            bool isProton = false)
         {
-            if(!skipPathCheck)
-                if (!WineHelpers.ValidateWinePath(winePath))
+            if (isProton)
+            {
+                if (Directory.Exists(Path.Combine(winePath, "dist")))
+                    winePath = Path.Combine(winePath, "dist");
+                else if (Directory.Exists(Path.Combine(winePath, "files")))
+                    winePath = Path.Combine(winePath, "files");
+                else
+                    throw new Exception("Proton Path is not valid");
+            }
+
+            if (!WineHelpers.ValidateWinePath(winePath))
+                if (isProton)
+                    throw new Exception("Proton Path is not valid");
+                else
                     throw new Exception("Wine Path is not valid");
 
             this.WinePath = winePath;
