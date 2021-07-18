@@ -15,20 +15,19 @@ namespace Bottles.LibraryWine
             REG_NONE
         }
 
+        public static object GetKeyValues(string key)
+        {
+            return true;
+        }
+        
         public static bool AddKey(string key, string value, string data, KTypes type)
         {
-            try
-            {
-                // try to add key
-                
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // log/show ex.Message;
-
-                return false;
-            }
+            return true;
+        }
+        
+        public static bool DeleteKey(string key, string value)
+        {
+            return true;
         }
     }
 }
