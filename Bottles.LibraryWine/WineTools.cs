@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Bottles.LibraryWine
@@ -13,6 +15,51 @@ namespace Bottles.LibraryWine
                 return result.ToString();
 
             return (string)result;
+        }
+
+        public static List<WineProcess> GetRunningProcesses(ref Wine wine)
+        {
+            var processes = new List<WineProcess>();
+            var result = wine.ExecCommand(
+                "winedbg",
+                @"--command ""info proc""",
+                getOutput: true
+            );
+
+            if (result is bool)
+                return processes;
+            
+            string[] output = result.ToString().Split("\n");
+
+            if (output.Length < 2)
+                return processes;
+                
+            output = output.Skip(1).ToArray();
+            
+            string lastPid = "";
+
+            foreach (var line in output)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                string parentPid = "";
+
+                if (line.Contains("\\_"))
+                    parentPid = lastPid;
+                
+                string[] processInfo = line.Replace("\\_ ", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                processes.Add(new WineProcess(
+                    ref wine,
+                    name: processInfo[2],
+                    pid: processInfo[0],
+                    parentPid: parentPid
+                ));
+
+                lastPid = processInfo[0];
+            }
+
+            return processes;
         }
 #endregion
 
