@@ -34,23 +34,28 @@ namespace Bottles.LibraryWine
 
         private string GetHexPid(string pid)
         {
-            return string.Format("{0:X}", pid);
+            return $"0x{pid}";
         }
 
         public void Kill()
         {
-            string sequence = "<< END_OF_INPUTS\n" +
-                $"attach {Pid}\n" +
-                "kill\\\n" + 
-                "quit\\\n" + 
-                "END_OF_INPUTS";
-                
+            string[] sequence = {
+                $"attach {Pid}",
+                "kill",
+                "quit"
+            };
+
+            string output = "";
+            
             if (!ProtectedProcesses.Contains(Name))
             {
-                _Wine.ExecCommand(
+                output = _Wine.ExecCommand(
                     "winedbg",
-                    sequence
-                );
+                    getOutput: true,
+                    sequence: sequence
+                ).ToString();
+
+                Console.WriteLine(output);
             }
         }
     }
