@@ -124,13 +124,9 @@ namespace Bottles.LibraryWine
                 fileName = SupportedTerminalsStrings[Terminal.ToString()][0];
             }
             else {
-                useShellExecute = true;
-                redirectStandardOutput = false;
+                useShellExecute = false;
+                redirectStandardOutput = true;
             }
-#endif
-
-#if DEBUG
-            Console.WriteLine($"Executing: {fileName} {fileArguments}");
 #endif
 
             var startInfo = new ProcessStartInfo() 
@@ -139,6 +135,7 @@ namespace Bottles.LibraryWine
                 Arguments = fileArguments,
                 UseShellExecute = useShellExecute,
                 RedirectStandardOutput = redirectStandardOutput,
+                CreateNoWindow = true,
                 WorkingDirectory = workingDirectory
             };
 
@@ -158,6 +155,7 @@ namespace Bottles.LibraryWine
             try
             {
                 proc.Start();
+                proc.WaitForExit();
 
                 if (redirectStandardOutput)
                 {
@@ -168,7 +166,6 @@ namespace Bottles.LibraryWine
                         return output;
                 }
 
-                proc.WaitForExit();
                 return true;
             }
             catch(Exception ex)
