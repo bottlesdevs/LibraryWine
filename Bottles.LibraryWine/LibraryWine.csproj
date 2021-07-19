@@ -2,16 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>Net5.0</TargetFramework>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
+    <AssemblyVersion>0.2.0</AssemblyVersion>
+    <FileVersion>0.2.0</FileVersion>
     <Authors>Bottles Developers</Authors>
     <Product>Bottles Wine Library</Product>
     <Copyright>Bottles Developers 2021</Copyright>
     <RepositoryUrl>https://github.com/bottlesdevs/LibraryWine</RepositoryUrl>
     <RepositoryType>GIT</RepositoryType>
-    <AssemblyVersion>0.1.0</AssemblyVersion>
-    <FileVersion>0.1.0</FileVersion>
     <Configurations>Debug;Release;Flatpak;Snap</Configurations>
     <Platforms>AnyCPU</Platforms>
+    
+    <Description>LibraryWine is a complete Wine wrapper with Proton runner support.</Description>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <PackageTags>wine,proton,wrapper</PackageTags>
+    <PackageProjectUrl>https://github.com/bottlesdevs/LibraryWine</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup>
