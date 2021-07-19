@@ -14,6 +14,17 @@ namespace Bottles.LibraryWine
             REG_EXPAND_SZ,
             REG_NONE
         }
+        private static List<string> DllOverrideTypesStrings = new List<string>()
+        {
+            "builtin", "native", "builtin,native", "native,builtin"
+        };
+        public enum DllOverrideTypes
+        {
+            BUILTIN = 0,
+            NATIVE = 1,
+            BUILTIN_NATIVE = 2,
+            NATIVE_BUILTIN = 3
+        }
         private static Dictionary<string, Models.WindowsVersion> WindowsVersionsModels = new Dictionary<string, Models.WindowsVersion>
         {
             { "win10", new Models.WindowsVersion()
@@ -290,6 +301,26 @@ namespace Bottles.LibraryWine
                 "HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides"
             );
             return results;
+        }
+
+        public static void AddDllOverride(ref Wine wine, string dll, DllOverrideTypes type)
+        {
+            AddKey(
+                ref wine,
+                "HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides",
+                dll,
+                DllOverrideTypesStrings[(int)type],
+                KTypes.REG_SZ
+            );
+        }
+
+        public static void DeleteDllOverride(ref Wine wine, string dll)
+        {
+            DeleteKey(
+                ref wine,
+                "HKEY_CURRENT_USER\\Software\\Wine\\DllOverrides",
+                dll
+            );
         }
 #endregion
     }

@@ -24,18 +24,6 @@ namespace Bottles.LibraryWine
             Y_ALL = 3
         }
 
-        private List<string> DllOverrideTypesString = new List<string>()
-        {
-            "builtin", "native", "builtin,native", "native,builtin"
-        };
-        public enum DllOverrideTypes
-        {
-            BUILTIN = 0,
-            NATIVE = 1,
-            BUILTIN_NATIVE = 2,
-            NATIVE_BUILTIN = 3
-        }
-
         public List<string> BootStatesStrings = new List<string>()
         {
             "--end-session", "--force", "--init", "--kill", "--restart", "--shutdown", "--update"
