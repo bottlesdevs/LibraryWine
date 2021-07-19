@@ -93,6 +93,7 @@ namespace Bottles.LibraryWine
             string command,
             string arguments = "",
             Dictionary<string, string> envVars = null,
+            string[] sequence = null,
             bool getOutput = false,
             bool useTerminal = false,
             string workingDirectory = "")
@@ -104,8 +105,8 @@ namespace Bottles.LibraryWine
             string fileArguments = $"{command} {arguments}";
             bool useShellExecute = false;
             bool redirectStandardOutput = true;
+            bool redirectStandardInput = false;
 
-#if !FLATPAK
             if (useTerminal && Terminal != SupportedTerminals.NONE && !getOutput)
             {
                 fileArguments = $"{SupportedTerminalsStrings[Terminal.ToString()][1]} {fileName} {fileArguments}";
@@ -115,13 +116,18 @@ namespace Bottles.LibraryWine
                 useShellExecute = false;
                 redirectStandardOutput = true;
             }
-#endif
+
+            if (sequence != null)
+                redirectStandardInput = true;
+
+            Console.WriteLine($"Executing: {fileName} {fileArguments}");
             var startInfo = new ProcessStartInfo() 
             { 
                 FileName = fileName, 
                 Arguments = fileArguments,
                 UseShellExecute = useShellExecute,
                 RedirectStandardOutput = redirectStandardOutput,
+                RedirectStandardInput = redirectStandardInput,
                 CreateNoWindow = true,
                 WorkingDirectory = workingDirectory
             };
@@ -142,6 +148,15 @@ namespace Bottles.LibraryWine
             try
             {
                 proc.Start();
+
+                if (sequence != null)
+                {
+                    foreach (var sequenceItem in sequence)
+                    {
+                        proc.StandardInput.WriteLine(sequenceItem);
+                    }
+                }
+
                 proc.WaitForExit();
 
                 if (redirectStandardOutput)
