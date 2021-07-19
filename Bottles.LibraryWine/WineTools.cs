@@ -48,7 +48,11 @@ namespace Bottles.LibraryWine
                 if (line.Contains("\\_"))
                     parentPid = lastPid;
                 
-                string[] processInfo = line.Replace("\\_ ", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string[] processInfo = line.Replace(
+                    "\\_ ", "").Replace(
+                        "'", "").Split(
+                            ' ', StringSplitOptions.RemoveEmptyEntries);
+                            
                 processes.Add(new WineProcess(
                     ref wine,
                     name: processInfo[2],
