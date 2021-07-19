@@ -6,9 +6,10 @@ namespace Bottles.LibraryWine
 {
     public class WineProcess
     {
-        private string Name { get; set; }
-        private string Pid { get; set; } 
-        private int ParentPid { get; set; }
+        public string Name { get; set; }
+        public string Pid { get; set; } 
+        public string ParentPid { get; set; }
+        private Wine _Wine { get; set; }
 
         private List<string> ProtectedProcesses = new List<string> {
             "explorer.exe",
@@ -21,29 +22,36 @@ namespace Bottles.LibraryWine
             "conhost.exe"
         };
 
-        public WineProcess(string name, int pid, int parentPid=-1)
+        public WineProcess(ref Wine wine, string name, string pid, string parentPid="")
         {
             this.Name = name;
             this.Pid = GetHexPid(pid);
+            this._Wine = wine;
 
-            if (parentPid > -1)
+            if (parentPid != "")
                 this.ParentPid = parentPid;
         }
 
-        private string GetHexPid(int pid)
+        private string GetHexPid(string pid)
         {
             return string.Format("{0:X}", pid);
         }
 
         public void Kill()
         {
-            /*
-                winedbg << END_OF_INPUTS\n\
-                attach {self.pid}\n\
-                kill\n\
-                quit\n\
-                END_OF_INPUTS
-            */
+            string sequence = "<< END_OF_INPUTS\n" +
+                $"attach {Pid}\n" +
+                "kill\\\n" + 
+                "quit\\\n" + 
+                "END_OF_INPUTS";
+                
+            if (!ProtectedProcesses.Contains(Name))
+            {
+                _Wine.ExecCommand(
+                    "winedbg",
+                    sequence
+                );
+            }
         }
     }
 }
