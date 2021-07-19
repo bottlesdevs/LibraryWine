@@ -2,6 +2,7 @@
 C# library for interacting with Wine
 
 [![CodeFactor](https://www.codefactor.io/repository/github/bottlesdevs/librarywine/badge)](https://www.codefactor.io/repository/github/bottlesdevs/librarywine)
+[![NuGet](https://img.shields.io/nuget/v/LibraryWine.svg?style=square&label=nuget)](https://www.nuget.org/packages/LibraryWine/)
 
 > This library is a work in progress.
 
