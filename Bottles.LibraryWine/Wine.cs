@@ -116,7 +116,6 @@ namespace Bottles.LibraryWine
                 redirectStandardOutput = true;
             }
 #endif
-
             var startInfo = new ProcessStartInfo() 
             { 
                 FileName = fileName, 
