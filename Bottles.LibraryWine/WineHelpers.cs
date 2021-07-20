@@ -40,7 +40,6 @@ namespace Bottles.LibraryWine
             return true;
         }
 
-
         public static bool CheckArchCompatibility()
         {
             return false;
