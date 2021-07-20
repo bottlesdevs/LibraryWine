@@ -88,7 +88,6 @@ namespace Bottles.LibraryWine
             this.VerboseLevel = verboseLevel;
         }
 
-
         public object ExecCommand(
             string command,
             string arguments = "",
