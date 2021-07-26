@@ -68,21 +68,21 @@ WineRegister.DeleteKey(
 
 // Mapped keys
 WineRegister.SetWindowsVersion(
-    ref: wine,
+    ref wine,
     version: WineRegister.WindowsVersions.WIN10
 );
 WineRegister.SetAppDefaultVersion(
-    ref: wine,
+    ref wine,
     executable: "steam.exe",
     version: WineRegister.WindowsVersions.WIN7
 );
 WineRegister.SetVirtualDesktop(
-    ref: wine,
+    ref wine,
     enabled: true,
     resolution: "1920x1080"
 );
 WineRegister.SetWindowDecorations(
-    ref: wine,
+    ref wine,
     enabled: true
 );
 WineRegister.SetWindowManaged(
